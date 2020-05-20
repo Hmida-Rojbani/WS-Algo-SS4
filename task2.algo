@@ -1,0 +1,43 @@
+List :	STRUCT
+            data : INTEGER;
+            next : ^List;
+        END_STRUCT
+FUNCTION get_bucket_index(val, nb_buckets : INTEGER) : INTEGER
+BEGIN
+    RETURN val/nb_buckets ;
+END
+PROCEDURE bucket_sort(arr : ARRAY_OF INTEGER, nb_buckets)
+VAR
+    i,j,pos : INTEGER;
+    buckets : ARRAY_OF ^List [nb_buckets];
+    current : ^List;
+BEGIN
+    // Initialize empty buckets
+    FOR i FROM 0 TO nb_buckets-1 STEP 1  DO
+        bucket_sort[i] := NULL;
+    END_FOR
+
+    // Fill the buckets with respective elements
+    FOR i FROM 0 TO arr.length -1  DO
+        current := create_node_list();
+        pos := get_bucket_index(arr[i],nb_buckets);
+        current^.data := arr[i];
+        current^.next := buckets[pos];
+        buckets[pos] := current;
+    END_FOR
+    // Sort the elements of each bucket
+    FOR i FROM 0 TO nb_buckets-1 STEP 1  DO
+        // insertion_sort version for linked list
+        insertion_sort(buckets[i]);
+    END_FOR
+    // Put sorted elements on arr
+    j:=0;
+    FOR i FROM 0 TO nb_buckets-1 STEP 1  DO
+        WHILE (buckets[i] <> NULL) DO
+            arr[j] := buckets[i]^.data;
+            buckets[i] := buckets[i]^.next;
+            j := j+1;
+        END_WHILE
+    END_FOR
+
+END

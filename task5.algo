@@ -1,0 +1,69 @@
+//intermediare structure to use to solve the problem
+Pair :	STRUCT
+                freq : INTEGER;
+                str : STRING;
+            END_STRUCT
+// procedure to use in sorting
+PROCEDURE swap(VAR xp,VAR yp : Pair)
+VAR
+    tmp : Pair;
+BEGIN
+    tmp : = xp;
+    xp := yp;
+    yp := tmp;
+END
+// bubble sort 
+PROCEDURE bubbleSort_Pair(VAR tab : ARRAY_OF Pair)
+VAR
+    i,j,n : INTEGER;
+BEGIN
+    n := tab.length;
+    FOR i FROM 0 TO n-2 STEP 1  DO
+        // Last i elements are already in place
+        FOR j FROM 0 TO n-i-2 STEP 1  DO
+            // level one of sorting with frequency
+            IF (tab[j].freq > tab[j+1].freq) THEN
+                swap(tab[j],tab[j+1]);
+                //level two of sorting with lexicographical order.
+            ELSE_IF (tab[j].freq = tab[j+1].freq) THEN
+                // compare is a function in String return the lexicographical order.
+                IF (tab[j].str.compare(tab[j+1].str) >0 )) THEN
+                    swap(tab[j],tab[j+1]);
+                END_IF
+            END_IF
+        END_FOR
+    END_FOR
+END
+// function to solve the task
+FUNCTION freq_sort(arr : ARRAY_OF STRING) : ARRAY_OF STRING
+VAR
+    output, tmp : ARRAY_OF (STRING[30])[20];
+    htab : HASH_TABLE<STRING,INTEGER>; 
+    tab : ARRAY_OF Pair[20];
+    i,count : INTEGER;
+BEGIN
+    // so put the arr in hash table where the word is the key 
+    //and the frequency is the value
+    FOR i FROM 0 TO arr.length -1 STEP 1  DO
+        IF (htab.lookup(arr[i]) = TRUE) THEN
+            count := htab.get(arr[i]);
+            htab.insert(arr[i],count+1);
+        ELSE
+            htab.insert(arr[i],1);
+        END_IF
+    END_FOR
+
+    // Loop to store the frequency and 
+    // word in tab with keys of the hashtable
+    tmp := htab.getKeys();
+    FOR i FROM 0 TO tmp.length-1 DO
+        tab[i].str := tmp[i];
+        tab[i].freq := htab.get(tmp[i]);
+    END_FOR
+
+    bubbleSort_Pair(tab);
+    FOR i FROM 0 TO tmp.length-1 DO
+        output[i] := tmp[i].str;
+    END_FOR
+    RETURN output;
+END
