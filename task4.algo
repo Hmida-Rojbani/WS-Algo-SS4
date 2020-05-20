@@ -1,0 +1,9 @@
+FUNCTION exponentail_search(arr : ARRAY_OF INTEGER, x :INTEGER) : INTEGER
+VAR
+    bound : INTEGER := 1;
+BEGIN
+    WHILE (bound < arr.length AND arr[bound] < x) DO
+        bound := bound *2;
+    END_WHILE
+    RETURN binary_search(arr,bound/2,min(bound,arr.length),x) ;
+END
